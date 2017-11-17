@@ -81,7 +81,7 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Data Shape Testing" enabled="true">
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="200" enabled="true">
             <stringProp name="cacheKey"></stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
@@ -90,50 +90,84 @@
 JsonSlurper JSON = new JsonSlurper();
 
 def failureMessage = &quot;&quot;;
+def json;
 
 try {
-	result = JSON.parseText(prev.getResponseDataAsString());	
+	json = JSON.parseText(prev.getResponseDataAsString());	
 } catch (Exception e) {
 	failureMessage += &quot;Expected response code [200] but to [&quot;+prev.getResponseCode()+&quot;]&quot;;
 }
 
-//assert jsonResponse instanceof Map
-
-// result.company|mac_prefix|address|start_hex|end_hex|country|type
-
-// 1st level children
-if (!result.keySet().containsAll([&quot;result&quot;])) {
-	failureMessage += &quot;shape has changed [&quot;+jsonResponse.keySet()+&quot;]&quot;;
-}
-
-// 2nd level children
-failureMessage += checkMandatoryFieldForValue(result.result.company, &quot;result.company&quot;, true);
-failureMessage += checkMandatoryFieldForValue(result.result.mac_prefix, &quot;result.mac_prefix&quot;, true);
-failureMessage += checkMandatoryFieldForValue(result.result.address, &quot;result.address&quot;, true);
-failureMessage += checkMandatoryFieldForValue(result.result.start_hex, &quot;result.start_hex&quot;, true);
-failureMessage += checkMandatoryFieldForValue(result.result.end_hex, &quot;result.end_hex&quot;, true);
-failureMessage += checkMandatoryFieldForValue(result.result.country, &quot;result.country&quot;, true);
-failureMessage += checkMandatoryFieldForValue(result.result.type, &quot;result.type&quot;, true);
-
 if (failureMessage?.trim()) {
 	AssertionResult.setFailureMessage(failureMessage);
 	AssertionResult.setFailure(true);
+}</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223Assertion>
+          <hashTree/>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Data Shape" enabled="true">
+            <stringProp name="cacheKey"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper;
+
+JsonSlurper JSON = new JsonSlurper();
+
+def failureMessage = &quot;&quot;;	
+
+//assert jsonResponse instanceof Map
+
+// parent nodes
+def root = JSON.parseText(prev.getResponseDataAsString());
+
+// for root parent node, use helper to check expected children; for all others
+// it&apos;s brut force
+if (!root.keySet().containsAll([&quot;result&quot;])) {
+	failureMessage += &quot;shape has changed [&quot;+jsonResponse.keySet()+&quot;]&quot;;
+}
+
+// leaf nodes
+// e.g. result.company|result.mac_prefix|result.address|result.start_hex|result.end_hex|result.country|result.type
+failureMessage += checkMandatoryFieldForValue(root.result.company, &quot;result.company&quot;, true);
+failureMessage += checkMandatoryFieldForValue(root.result.mac_prefix, &quot;result.mac_prefix&quot;, true);
+failureMessage += checkMandatoryFieldForValue(root.result.address, &quot;result.address&quot;, true);
+failureMessage += checkMandatoryFieldForValue(root.result.start_hex, &quot;result.start_hex&quot;, true);
+failureMessage += checkMandatoryFieldForValue(root.result.end_hex, &quot;result.end_hex&quot;, true);
+failureMessage += checkMandatoryFieldForValue(root.result.country, &quot;result.country&quot;, true);
+failureMessage += checkMandatoryFieldForValue(root.result.type, &quot;result.type&quot;, true);
+//failureMessage += checkMandatoryFieldForValue(root.result.typex, &quot;result.typex&quot;, true);
+
+processTests(failureMessage);
+
+processResponseShape(failureMessage);
+
+// turn these into utilities
+
+def processTests(failureMessage) {
+	if (failureMessage?.trim()) {
+		AssertionResult.setFailureMessage(failureMessage);
+		AssertionResult.setFailure(true);
+	}	
 }
 
 def checkMandatoryFieldForValue(val,name,isMandatory) {
 	if (val == null) {
-		return &quot;missing mandatory property [&quot;+name+&quot;]&quot;;
+		return &quot;+++ missing mandatory property [&quot;+name+&quot;]&quot;;
 	} else if (val == &quot;&quot; ) {
-		return &quot;mandatory property [&quot;+name+&quot;] has missing value [&quot;+val+&quot;]&quot;;
+		return &quot;+++ mandatory property [&quot;+name+&quot;] has missing value [&quot;+val+&quot;]&quot;;
 	} else {
 		return &quot;&quot;;
 	}
+}
+
+def processResponseShape(failureMessage) {
+	// TODO
 }
 </stringProp>
             <stringProp name="scriptLanguage">groovy</stringProp>
           </JSR223Assertion>
           <hashTree/>
-          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Response Shape Testing" enabled="false">
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Response Shape" enabled="false">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
