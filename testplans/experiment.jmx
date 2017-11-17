@@ -66,11 +66,11 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">www.google.com</stringProp>
+          <stringProp name="HTTPSampler.domain">macvendors.co</stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/00:80:92:78:40:51/json</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -81,14 +81,30 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Meet the new extractor" enabled="true">
-            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-            <stringProp name="RegexExtractor.refname">meetTheNew</stringProp>
-            <stringProp name="RegexExtractor.regex">&lt;span&gt;Meet the new &lt;/span&gt;</stringProp>
-            <stringProp name="RegexExtractor.template"></stringProp>
-            <stringProp name="RegexExtractor.default"></stringProp>
-            <stringProp name="RegexExtractor.match_number"></stringProp>
-          </RegexExtractor>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="JSR223 Assertion" enabled="true">
+            <stringProp name="cacheKey"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper;
+
+JsonSlurper JSON = new JsonSlurper();
+
+def failureMessage = &quot;&quot;;
+
+try {
+	jsonResponse = JSON.parseText(prev.getResponseDataAsString());	
+} catch (Exception e) {
+	failureMessage += &quot;Expected response code [200] but to [&quot;+prev.getResponseCode()+&quot;]&quot;;
+}
+
+// test field exists
+// test field value present - mandatory
+// test field value present - optional scenarios
+
+//AssertionResult.setFailure(true);
+</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+          </JSR223Assertion>
           <hashTree/>
         </hashTree>
       </hashTree>
