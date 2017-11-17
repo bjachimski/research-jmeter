@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="3.2" jmeter="3.3 r1808647">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="External REST Endpoint Shape Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">true</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
@@ -123,7 +123,7 @@ def root = JSON.parseText(prev.getResponseDataAsString());
 // for root parent node, use helper to check expected children; for all others
 // it&apos;s brut force
 if (!root.keySet().containsAll([&quot;result&quot;])) {
-	failureMessage += &quot;shape has changed [&quot;+jsonResponse.keySet()+&quot;]&quot;;
+	failureMessage += &quot;root shape has changed [&quot;+jsonResponse.keySet()+&quot;]&quot;;
 }
 
 // leaf nodes
@@ -152,11 +152,11 @@ def processFailureMessage(failureMessage) {
 	}	
 }
 
-def checkMandatoryFieldForValue(val,name,isMandatory) {
+def checkMandatoryFieldForValue(val, name, isMandatory) {
 	if (val == null) {
-		return &quot;+++ missing mandatory property [&quot;+name+&quot;]&quot;;
+		return &quot;+++ shape change: missing mandatory property [&quot;+name+&quot;]&quot;;
 	} else if (val == &quot;&quot; ) {
-		return &quot;+++ mandatory property [&quot;+name+&quot;] has missing value [&quot;+val+&quot;]&quot;;
+		return &quot;+++ shape change: mandatory property [&quot;+name+&quot;] has missing value [&quot;+val+&quot;]&quot;;
 	} else {
 		return &quot;&quot;;
 	}
