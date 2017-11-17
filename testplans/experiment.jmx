@@ -105,7 +105,7 @@ if (failureMessage?.trim()) {
             <stringProp name="scriptLanguage">groovy</stringProp>
           </JSR223Assertion>
           <hashTree/>
-          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Data Shape" enabled="true">
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Shape" enabled="true">
             <stringProp name="cacheKey"></stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
@@ -137,13 +137,15 @@ failureMessage += checkMandatoryFieldForValue(root.result.country, &quot;result.
 failureMessage += checkMandatoryFieldForValue(root.result.type, &quot;result.type&quot;, true);
 //failureMessage += checkMandatoryFieldForValue(root.result.typex, &quot;result.typex&quot;, true);
 
-processTests(failureMessage);
+// run standard shape test on the overall response
+failureMessage += processResponseShape(failureMessage);
 
-processResponseShape(failureMessage);
+// standard last step
+processFailureMessage(failureMessage);
 
 // turn these into utilities
 
-def processTests(failureMessage) {
+def processFailureMessage(failureMessage) {
 	if (failureMessage?.trim()) {
 		AssertionResult.setFailureMessage(failureMessage);
 		AssertionResult.setFailure(true);
@@ -162,17 +164,10 @@ def checkMandatoryFieldForValue(val,name,isMandatory) {
 
 def processResponseShape(failureMessage) {
 	// TODO
+	return &quot;&quot;;
 }
 </stringProp>
             <stringProp name="scriptLanguage">groovy</stringProp>
-          </JSR223Assertion>
-          <hashTree/>
-          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Response Shape" enabled="false">
-            <stringProp name="scriptLanguage">groovy</stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="cacheKey"></stringProp>
-            <stringProp name="script"></stringProp>
           </JSR223Assertion>
           <hashTree/>
         </hashTree>
