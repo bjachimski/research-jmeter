@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="3.2" jmeter="3.3 r1808647">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Mac Vendor Test Plan" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Mac Vendor" enabled="true">
       <stringProp name="TestPlan.comments">These are the test plans to use for shape testing</stringProp>
       <boolProp name="TestPlan.functional_mode">true</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
@@ -26,41 +26,19 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <IncludeController guiclass="IncludeControllerGui" testclass="IncludeController" testname="[IC] - 200" enabled="true">
-          <stringProp name="IncludeController.includepath">E:\projects\GitHub\research-jmeter\testplans\200.jmx</stringProp>
+        <IncludeController guiclass="IncludeControllerGui" testclass="IncludeController" testname="Connectivity" enabled="true">
+          <stringProp name="IncludeController.includepath">E:\projects\GitHub\research-jmeter\testplans\connectivity.jmx</stringProp>
         </IncludeController>
         <hashTree/>
-        <IncludeController guiclass="IncludeControllerGui" testclass="IncludeController" testname="[IC] - Response Shape" enabled="true">
-          <stringProp name="IncludeController.includepath">E:\projects\GitHub\research-jmeter\testplans\standard-shape.jmx</stringProp>
+        <IncludeController guiclass="IncludeControllerGui" testclass="IncludeController" testname="Response Shape" enabled="true">
+          <stringProp name="IncludeController.includepath">E:\projects\GitHub\research-jmeter\testplans\response-shape.jmx</stringProp>
         </IncludeController>
         <hashTree/>
-        <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="[JA] - Data Shape" enabled="true">
+        <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Data Shape" enabled="true">
           <stringProp name="cacheKey"></stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
-          <stringProp name="script">/*import groovy.json.JsonSlurper;
-
-JsonSlurper JSON = new JsonSlurper();
-
-//appendTimestamp(&quot;xyz&quot;);
-
-//System.out.println(&quot;+++ name [&quot;+name+&quot;]&quot;);
-
-def failureMessage = &quot;&quot;;	
-
-//assert jsonResponse instanceof Map
-
-// parent nodes
-def root = ctx.JSON.parseText(prev.getResponseDataAsString());
-
-// for root parent node, use helper to check expected children; for all others
-// it&apos;s brut force
-if (!ctx.root.keySet().containsAll([&quot;result&quot;])) {
-	failureMessage += &quot;root shape has changed [&quot;+jsonResponse.keySet()+&quot;]&quot;;
-}
-System.out.println(&quot;xxx [&quot;+ctx+&quot;]&quot;);
-*/
-import groovy.json.JsonSlurper;
+          <stringProp name="script">import groovy.json.JsonSlurper;
 def root = (new JsonSlurper()).parseText(prev.getResponseDataAsString());
 def failureMessage = &quot;&quot;;
 
@@ -80,8 +58,6 @@ failureMessage += processResponseShape(failureMessage);
 
 // standard last step
 processFailureMessage(failureMessage);
-
-
 
 // turn these into utilities
 
@@ -107,6 +83,14 @@ def processResponseShape(failureMessage) {
 	return &quot;&quot;;
 }</stringProp>
           <stringProp name="scriptLanguage">groovy</stringProp>
+        </JSR223Assertion>
+        <hashTree/>
+        <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Data Integrity" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey"></stringProp>
+          <stringProp name="script">//import groovy.json.JsonSlurper;</stringProp>
         </JSR223Assertion>
         <hashTree/>
       </hashTree>

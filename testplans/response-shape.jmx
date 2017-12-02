@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="3.2" jmeter="3.3 r1808647">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Standard Shape Test Plan" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Test Fragment" enabled="true"/>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">macvendors.co</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/00:80:92:78:40:51/json</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Simple Controller" enabled="true"/>
+        <hashTree>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="[JA] - Standard Shape" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey"></stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper;
+
+JsonSlurper JSON = new JsonSlurper();
+
+def failureMessage = &quot;&quot;;	
+
+System.out.println(&quot;+++ in external fragment&quot;);
+
+//assert jsonResponse instanceof Map
+
+// parent nodes
+def root = JSON.parseText(prev.getResponseDataAsString());
+
+// for root parent node, use helper to check expected children; for all others
+// it&apos;s brut force
+if (!root.keySet().containsAll([&quot;result&quot;])) {
+	failureMessage += &quot;root shape has changed [&quot;+jsonResponse.keySet()+&quot;]&quot;;
+}</stringProp>
+          </JSR223Assertion>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+    <WorkBench guiclass="WorkBenchGui" testclass="WorkBench" testname="WorkBench" enabled="true">
+      <boolProp name="WorkBench.save">true</boolProp>
+    </WorkBench>
+    <hashTree/>
+  </hashTree>
+</jmeterTestPlan>
