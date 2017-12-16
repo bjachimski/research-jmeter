@@ -14,7 +14,7 @@
       <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Utilities" enabled="true">
         <stringProp name="scriptLanguage">groovy</stringProp>
         <stringProp name="parameters"></stringProp>
-        <stringProp name="filename">E:\projects\GitHub\research-jmeter\testplans\utils.groovy</stringProp>
+        <stringProp name="filename">E:\projects\GitHub\research-jmeter\testplans\Utilities.groovy</stringProp>
         <stringProp name="cacheKey"></stringProp>
         <stringProp name="script"></stringProp>
       </JSR223PreProcessor>
@@ -25,7 +25,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1510803938000</longProp>
         <longProp name="ThreadGroup.end_time">1510803938000</longProp>
@@ -58,28 +58,29 @@
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="script">// SETUP
-def a = vars.getObject(&apos;customAssert&apos;)	// reusable utilities
+def a = vars.getObject(&apos;Utilities&apos;)	// our reusable utilities
 def root = a.getRoot(prev);			// root json object from previous response
-def msg = &quot;&quot;;						// failure Message accumulator
+def msg = &quot;&quot;;						// failure Message accumulator for this sampler
 
 // CHECK CONNECTIVITY
-a.check200(prev);
+//props.put(&quot;connectOnly&quot;,&quot;false&quot;);
+if (a.check200(prev)) { return; };
 
-// CHECK DEVNAV RESPONSE SHAPE
-msg += a.checkShape(root, msg);
+// CHECK STANDARD RESPONSE SHAPE
+msg += a.checkResponseShape(root, msg);
 
 // CHECK GENERAL DOMAIN SHAPE
 def map = [:];
 map[&quot;result.company&quot;] = root.result.company;
 map[&quot;result.mac_prefix&quot;] = root.result.mac_prefix;
 map[&quot;result.address&quot;] = root.result.address;
-map[&quot;result.start_hexpany&quot;] = root.result.start_hex;
+map[&quot;result.start_hex&quot;] = root.result.start_hex;
 map[&quot;result.end_hex&quot;] = root.result.end_hex;
 map[&quot;result.type&quot;] = root.result.type;
 msg += a.checkMandatoryFields(map, msg);
 
 // WRAPUP
-a.processFailureMessage(msg);</stringProp>
+a.concludeTests(msg);</stringProp>
           <stringProp name="scriptLanguage">groovy</stringProp>
         </JSR223Assertion>
         <hashTree/>
@@ -90,7 +91,7 @@ a.processFailureMessage(msg);</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1510803938000</longProp>
         <longProp name="ThreadGroup.end_time">1510803938000</longProp>
@@ -124,7 +125,7 @@ a.processFailureMessage(msg);</stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="cacheKey"></stringProp>
           <stringProp name="script">// SETUP
-def a = vars.getObject(&apos;customAssert&apos;)	// reusable utilities
+def a = vars.getObject(&apos;Utilities&apos;)	// reusable utilities
 def root = a.getRoot(prev);			// root json object from previous response
 def msg = &quot;&quot;;						// failure Message accumulator
 
@@ -133,8 +134,7 @@ msg += a.checkExpectedValue(root.result.company, &quot;Silex Technology, Inc.&qu
 msg += a.checkExpectedValue(root.result.mac_prefix, &quot;00:80:92&quot;, msg);
 
 // WRAPUP
-a.processFailureMessage(msg);
-</stringProp>
+a.concludeTests(msg);</stringProp>
         </JSR223Assertion>
         <hashTree/>
       </hashTree>

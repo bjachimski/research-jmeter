@@ -1,7 +1,8 @@
-import groovy.json.JsonSlurper
-import org.apache.jmeter.assertions.AssertionResult
+import groovy.json.JsonSlurper;
+import org.apache.jmeter.assertions.AssertionResult;
+import org.apache.jmeter.util.JMeterUtils;
 
-class CustomAssert {
+class Utilities {
 
 	def getRoot(prev) {
         def jsonSlurper = new JsonSlurper()
@@ -13,15 +14,20 @@ class CustomAssert {
         return jsonSlurper.parseText(json)
     }
  
-	def check200(prev) {   
+	def check200(prev) {
+		def rv = false;   
     	// this is the basic is it running test
 		if (!prev.getResponseCode().equals("200")) {
 			AssertionResult.setFailureMessage("Expected response code [200] but got ["+prev.getResponseCode()+"]");
 			AssertionResult.setFailure(true);
 		}
+		if (isConnectivityOnlyMode()) {
+			rv = true;
+		}
+		return rv;
 	}
 
-	def checkShape(root, failureMessage) {	
+	def checkResponseShape(root, failureMessage) {
 		// for root parent node, use helper to check expected children; for all others
 		// it's brute force
 		if (!root.keySet().containsAll(["result"])) {
@@ -37,7 +43,7 @@ class CustomAssert {
         }
     }
 
-	def processFailureMessage(failureMessage) {
+	def concludeTests(failureMessage) {
 		if (failureMessage?.trim()) {
 			AssertionResult.setFailureMessage(failureMessage);
 			AssertionResult.setFailure(true);
@@ -49,14 +55,15 @@ class CustomAssert {
 		return msg;
 	}
 	
-	def simpleFunction() {
-		System.out.println("+++ in simpleFunction()");
+	def isConnectivityOnlyMode() {
+		//System.out.println("++ connectOnly mode is ["+JMeterUtils.getPropDefault("connectOnly",false)+"]");
+		return (JMeterUtils.getPropDefault("connectOnly",false));
 	}
 	
 	def checkMandatoryFields(map, msg) {
 		map.each{
-			System.out.println("checking ["+it.key+"] ["+it.value+"]");
-			System.out.println("check ");
+			//System.out.println("checking ["+it.key+"] ["+it.value+"]");
+			//System.out.println("check ");
 			if (it.value == null) {
 				msg += "+++ shape change: missing mandatory property ["+it.key+"]";
 			} else if (it.value == "" ) {
@@ -70,4 +77,4 @@ class CustomAssert {
 
 }
 
-vars.putObject('customAssert', new CustomAssert())
+vars.putObject('Utilities', new Utilities())
