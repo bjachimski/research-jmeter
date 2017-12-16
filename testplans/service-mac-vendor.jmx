@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="3.2" jmeter="3.3 r1808647">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Mac Vendor" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments">These are the test plans to use for shape testing</stringProp>
       <boolProp name="TestPlan.functional_mode">true</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
@@ -11,7 +11,15 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+      <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Utilities" enabled="true">
+        <stringProp name="scriptLanguage">groovy</stringProp>
+        <stringProp name="parameters"></stringProp>
+        <stringProp name="filename">E:\projects\GitHub\research-jmeter\testplans\utils.groovy</stringProp>
+        <stringProp name="cacheKey"></stringProp>
+        <stringProp name="script"></stringProp>
+      </JSR223PreProcessor>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Mac Vendor" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -26,71 +34,107 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <IncludeController guiclass="IncludeControllerGui" testclass="IncludeController" testname="Connectivity" enabled="true">
-          <stringProp name="IncludeController.includepath">E:\projects\GitHub\research-jmeter\testplans\connectivity.jmx</stringProp>
-        </IncludeController>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Mac Vendor" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">macvendors.co</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/00:80:92:78:40:51/json</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
         <hashTree/>
-        <IncludeController guiclass="IncludeControllerGui" testclass="IncludeController" testname="Response Shape" enabled="true">
-          <stringProp name="IncludeController.includepath">E:\projects\GitHub\research-jmeter\testplans\response-shape.jmx</stringProp>
-        </IncludeController>
-        <hashTree/>
-        <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Data Shape" enabled="true">
+        <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Tests" enabled="true">
           <stringProp name="cacheKey"></stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
-          <stringProp name="script">import groovy.json.JsonSlurper;
-def root = (new JsonSlurper()).parseText(prev.getResponseDataAsString());
-def failureMessage = &quot;&quot;;
+          <stringProp name="script">// SETUP
+def a = vars.getObject(&apos;customAssert&apos;)	// reusable utilities
+def root = a.getRoot(prev);			// root json object from previous response
+def msg = &quot;&quot;;						// failure Message accumulator
 
-// leaf nodes
-// e.g. result.company|result.mac_prefix|result.address|result.start_hex|result.end_hex|result.country|result.type
-failureMessage += checkMandatoryFieldForValue(root.result.company, &quot;result.company&quot;, true);
-failureMessage += checkMandatoryFieldForValue(root.result.mac_prefix, &quot;result.mac_prefix&quot;, true);
-failureMessage += checkMandatoryFieldForValue(root.result.address, &quot;result.address&quot;, true);
-failureMessage += checkMandatoryFieldForValue(root.result.start_hex, &quot;result.start_hex&quot;, true);
-failureMessage += checkMandatoryFieldForValue(root.result.end_hex, &quot;result.end_hex&quot;, true);
-failureMessage += checkMandatoryFieldForValue(root.result.country, &quot;result.country&quot;, true);
-failureMessage += checkMandatoryFieldForValue(root.result.type, &quot;result.type&quot;, true);
-//failureMessage += checkMandatoryFieldForValue(root.result.typex, &quot;result.typex&quot;, true);
+// CHECK CONNECTIVITY
+a.check200(prev);
 
-// run standard shape test on the overall response
-failureMessage += processResponseShape(failureMessage);
+// CHECK DEVNAV RESPONSE SHAPE
+msg += a.checkShape(root, msg);
 
-// standard last step
-processFailureMessage(failureMessage);
+// CHECK GENERAL DOMAIN SHAPE
+def map = [:];
+map[&quot;result.company&quot;] = root.result.company;
+map[&quot;result.mac_prefix&quot;] = root.result.mac_prefix;
+map[&quot;result.address&quot;] = root.result.address;
+map[&quot;result.start_hexpany&quot;] = root.result.start_hex;
+map[&quot;result.end_hex&quot;] = root.result.end_hex;
+map[&quot;result.type&quot;] = root.result.type;
+msg += a.checkMandatoryFields(map, msg);
 
-// turn these into utilities
-
-def processFailureMessage(failureMessage) {
-	if (failureMessage?.trim()) {
-		AssertionResult.setFailureMessage(failureMessage);
-		AssertionResult.setFailure(true);
-	}	
-}
-
-def checkMandatoryFieldForValue(val, name, isMandatory) {
-	if (val == null) {
-		return &quot;+++ shape change: missing mandatory property [&quot;+name+&quot;]&quot;;
-	} else if (val == &quot;&quot; ) {
-		return &quot;+++ shape change: mandatory property [&quot;+name+&quot;] has missing value [&quot;+val+&quot;]&quot;;
-	} else {
-		return &quot;&quot;;
-	}
-}
-
-def processResponseShape(failureMessage) {
-	// TODO
-	return &quot;&quot;;
-}</stringProp>
+// WRAPUP
+a.processFailureMessage(msg);</stringProp>
           <stringProp name="scriptLanguage">groovy</stringProp>
         </JSR223Assertion>
         <hashTree/>
-        <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Data Integrity" enabled="true">
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Mac Vendor &gt; 00:80:92:78:40:51" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1510803938000</longProp>
+        <longProp name="ThreadGroup.end_time">1510803938000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Mac Vendor &gt; 00:80:92:78:40:51" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">macvendors.co</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/api/00:80:92:78:40:51/json</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Tests" enabled="true">
           <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="cacheKey"></stringProp>
-          <stringProp name="script">//import groovy.json.JsonSlurper;</stringProp>
+          <stringProp name="script">// SETUP
+def a = vars.getObject(&apos;customAssert&apos;)	// reusable utilities
+def root = a.getRoot(prev);			// root json object from previous response
+def msg = &quot;&quot;;						// failure Message accumulator
+
+// CHECK DATA CONDITIONS
+msg += a.checkExpectedValue(root.result.company, &quot;Silex Technology, Inc.&quot;, msg);
+msg += a.checkExpectedValue(root.result.mac_prefix, &quot;00:80:92&quot;, msg);
+
+// WRAPUP
+a.processFailureMessage(msg);
+</stringProp>
         </JSR223Assertion>
         <hashTree/>
       </hashTree>
