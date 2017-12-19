@@ -2,6 +2,10 @@ import groovy.json.JsonSlurper;
 import org.apache.jmeter.assertions.AssertionResult;
 import org.apache.jmeter.util.JMeterUtils;
 
+// this class provides custom Groovy functions
+
+// some additional comments
+
 class Utilities {
 
 	def getRoot(prev) {
